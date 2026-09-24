@@ -26,7 +26,7 @@ def add_lms_student_role(doc, method):
 
 
 @frappe.whitelist(allow_guest=True)  # nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
-def sign_up(email: str, full_name: str, verify_terms: bool, user_category: str):
+def sign_up(email: str, full_name: str, verify_terms: bool = False, user_category: str = "", password: str = None):
 	if is_signup_disabled():
 		frappe.throw(_("Sign Up is disabled"), _("Not Allowed"))
 
@@ -62,12 +62,15 @@ def sign_up(email: str, full_name: str, verify_terms: bool, user_category: str):
 					"user_category": user_category,
 					"country": "",
 					"enabled": 1,
-					"new_password": random_string(10),
+					"new_password": password or random_string(10),
 					"user_type": "Website User",
 				}
 			)
 			user.flags.ignore_permissions = True
 			user.flags.ignore_password_policy = True
+			if password:
+				user.flags.no_welcome_mail = True
+				user.send_welcome_email = 0
 			if default_role:
 				user.append_roles(default_role)
 			user.insert()
@@ -83,6 +86,13 @@ def sign_up(email: str, full_name: str, verify_terms: bool, user_category: str):
 			time.sleep(0.1 * (attempt + 1))
 
 	set_country_from_ip(None, user.name)
+
+	if password:
+		try:
+			frappe.local.login_manager.login_as(user.name)
+		except Exception:
+			pass
+		return 1, _("Signup successful. Welcome!")
 
 	if user.flags.email_sent:
 		return 1, _("Signup successful. Please check your email for verification.")

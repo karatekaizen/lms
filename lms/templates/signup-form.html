@@ -29,6 +29,12 @@
                 placeholder="{{ _('jane@example.com') }}" required autocomplete="email">
             <p class="field-error text-base text-ink-red-8 mb-0"></p>
         </div>
+        <div class="form-group flex flex-col items-start gap-1.5 mb-0">
+            <label class="text-base text-ink-gray-5 w-full mb-0" for="signup_password">{{ _("Password") }}</label>
+            <input type="password" id="signup_password" class="form-control"
+                placeholder="{{ _('Create a password (min. 6 characters)') }}" required autocomplete="new-password">
+            <p class="field-error text-base text-ink-red-8 mb-0"></p>
+        </div>
 
         {% if user_category %}
         <div class="form-group flex flex-col items-start gap-1.5 mb-0">
@@ -131,7 +137,7 @@
             clear_field_error("user_category");
         });
 
-        $("#signup_fullname, #signup_email").on("input", () => {
+        $("#signup_fullname, #signup_email, #signup_password").on("input", () => {
             toggle_signup_button();
         });
 
@@ -156,7 +162,9 @@
     }
 
     const toggle_signup_button = () => {
-        const filled = ($("#signup_fullname").val() || "").trim() && ($("#signup_email").val() || "").trim();
+        const filled = ($("#signup_fullname").val() || "").trim() 
+            && ($("#signup_email").val() || "").trim()
+            && ($("#signup_password").val() || "").trim();
         $(".signup-form .btn-signup").prop("disabled", !filled);
     }
 
@@ -197,11 +205,20 @@
             return false;
         }
 
+        const password = ($("#signup_password").val() || "").trim();
+        if (!password || password.length < 6) {
+            login.show_field_error("signup_password", {{ _("Password must be at least 6 characters.") | tojson }});
+            return false;
+        }
+
+        $(".signup-form .btn-signup").attr("aria-busy", "true").text({{ _("Signing up...") | tojson }});
+
         frappe.call({
             method: "lms.lms.user.sign_up",
             args: {
                 "email": email,
                 "full_name": full_name,
+                "password": password,
                 "verify_terms": $("#signup-terms").prop("checked") ? 1 : 0,
                 "user_category": user_category
             },
@@ -224,6 +241,9 @@
                     login.set_status({{ _("Success") | tojson }}, "green");
                     section.find(".login-error-banner").addClass("hidden");
                     show_signup_success(message);
+                    setTimeout(() => {
+                        window.location.href = "/lms";
+                    }, 1200);
                 }
             }
         });
