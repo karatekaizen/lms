@@ -1,0 +1,1 @@
+import{bU as e}from"./index-CW6SMJJu.js";const r=e(),o=t=>t?r.sanitize(t,{FORBID_TAGS:["form","input","button","textarea","select","option","label","fieldset"],FORBID_ATTR:["formaction","formmethod","formenctype"]}):"";export{o as s};

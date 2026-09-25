@@ -1,0 +1,1 @@
+import{c as r,I as s,N as u}from"./index-CW6SMJJu.js";function c(t,a,o){return{name:t,params:{batchName:a},hash:o}}function i(t,a,o,e){return u(t,c(a,o,e))}function m(t){const a=r({url:"lms.lms.utils.get_batch_details",makeParams:()=>({batch:t()}),auto:!0});return s(t,()=>a.reload()),a}export{c as b,i as o,m as u};

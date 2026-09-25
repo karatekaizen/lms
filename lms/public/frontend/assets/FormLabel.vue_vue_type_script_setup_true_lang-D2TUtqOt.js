@@ -1,0 +1,1 @@
+import{d as a,o as t,b as r,j as o,t as s,f as l,cv as n}from"./index-CW6SMJJu.js";const c=["for"],u=a({__name:"FormLabel",props:{label:{},id:{},required:{type:Boolean}},setup(e){return(i,d)=>(t(),r("label",{class:"block text-sm text-ink-gray-6",for:e.id},[o(s(e.label)+" ",1),l(n,{required:e.required},null,8,["required"])],8,c))}});export{u as _};
